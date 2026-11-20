@@ -6,7 +6,7 @@ Follow these rules strictly whenever creating or modifying React components unde
 
 ## 1. Props Interface
 
-- Every component **MUST** define a TypeScript `interface` for its props (use `interface`, not `type`).
+- Every component **MUST** define a TypeScript `interface` for its props (use `interface`, not `type` unless a union type is strictly required).
 - Name the interface `<ComponentName>Props` (e.g., `ButtonProps`, `UserCardProps`).
 - Every props interface **MUST** include an optional `id` property (`id?: string;`), even if the component accepts no other props.
 - Pass `id` to the component's root rendered element when applicable.
