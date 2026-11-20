@@ -2,9 +2,18 @@
 
 Follow these rules strictly whenever creating or modifying React components under `src/components/**`.
 
+Also follow [naming-conventions.md](./naming-conventions.md) for general naming and [styling-tailwind.md](./styling-tailwind.md) for Tailwind `className` ordering.
+
 ---
 
-## 1. Props Interface
+## 1. Naming
+
+- Every React component **MUST** use `PascalCase`, e.g., `MyComponent`, `UserBadge`, `IconClose`.
+- Single-component files should match the component's `PascalCase` name (e.g., `MyComponent.tsx`).
+
+---
+
+## 2. Props Interface
 
 - Every component **MUST** define a TypeScript `interface` for its props (use `interface`, not `type` unless a union type is strictly required).
 - Name the interface `<ComponentName>Props` (e.g., `ButtonProps`, `UserCardProps`).
@@ -31,7 +40,7 @@ export default Button;
 
 ---
 
-## 2. File Structure & Exports
+## 3. File Structure & Exports
 
 ### Single Component per File (Default)
 - Prefer placing each component in its own dedicated `.tsx` file.
@@ -78,7 +87,7 @@ export function CardBody({ id, children }: CardBodyProps) {
 
 ---
 
-## 3. Barrel Exports (`index.ts`) & Imports
+## 4. Barrel Exports (`index.ts`) & Imports
 
 - Every new component **MUST** be exported from an `index.ts` barrel file so consumers can import components cleanly from `@components`.
 - If components are organized into subdirectories (e.g., `src/components/icons/`), export them from the subdirectory's `index.ts` and re-export from `src/components/index.ts`.
@@ -111,8 +120,10 @@ import IconClose from "../../components/icons/IconClose";
 
 Before finishing any component task, verify:
 
+- [ ] Component name (and single-component filename) uses `PascalCase` (e.g., `MyComponent`).
 - [ ] Component has a dedicated props `interface` (e.g., `MyComponentProps`).
 - [ ] Props interface includes `id?: string;`.
 - [ ] Single-component file uses a `default` export; multi-component file uses named exports for every component.
 - [ ] Component is added to `index.ts` and accessible via `import { ... } from "@components"`.
+- [ ] Any Tailwind `className` attributes follow the ordering in `styling-tailwind.md`.
 
