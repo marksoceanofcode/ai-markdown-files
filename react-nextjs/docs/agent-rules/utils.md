@@ -1,36 +1,36 @@
 # Utility Functions Rules
 
-Follow these rules strictly whenever creating, modifying, or organizing utility functions under `src/utils/**`.
+Follow these rules strictly whenever creating, modifying, or organizing reusable utility functions under `src/utils/**`.
 
 Also follow [naming-conventions.md](./naming-conventions.md) for `camelCase` function/variable names and `UPPER_SNAKE_CASE` file-level constants.
 
 ---
 
-## 1. When to Use `src/utils/**`
+## 1. Purpose & Reuse First
 
-- Place reusable logic and business or data helpers that do **not** need to live inside an API route or React component in `src/utils/**`.
-- Before writing a new utility function, **ALWAYS** inspect `src/utils/**` first to see if an existing utility already fits or can be reused.
+- Use `src/utils/**` for focused, reusable functions that primarily serve a single purpose across the application (such as formatting, parsing, calculations, or string/date helpers).
+- Before writing a new utility function, **ALWAYS** inspect `src/utils/**` first to see if an existing utility already exists and can be reused.
 
 ---
 
-## 2. File Organization
+## 2. Single Responsibility
+
+- Functions should primarily **do one thing** cleanly, with a descriptive `camelCase` name and predictable inputs and outputs.
+- If a function grows to handle multiple distinct responsibilities, split those tasks into separate single-purpose functions.
+
+---
+
+## 3. File Organization
 
 - **Prefer one function per file**, matching the exported function name in `camelCase` (e.g., `src/utils/formatCurrency.ts`, `src/utils/slugify.ts`).
 - Multiple closely related utilities **MAY** share a common file (e.g., `src/utils/dateUtils.ts`, `src/utils/stringUtils.ts`) when grouping them together makes clear organizational sense.
 
 ---
 
-## 3. Single Responsibility
-
-- Functions should generally **do one thing** cleanly, with a clear `camelCase` name and focused responsibility.
-- If a function grows to handle multiple distinct tasks, split those tasks into separate single-purpose functions.
-
----
-
 ## 4. Exclusive vs. Reusable Helper Functions
 
 - **Exclusive helpers**: A utility file **MAY** contain private (unexported) helper functions used exclusively by that utility to keep the main function readable.
-- **Extract reusable helpers**: If an existing or new helper function could be used in multiple places across the codebase, **break it out into its own standalone exported utility function** (preferring its own file under `src/utils/**`, or an appropriate shared utility file) rather than duplicating it or leaving it trapped inside another utility.
+- **Extract reusable helpers**: If an existing or new helper function could be used multiple times across the application, **break it out into its own standalone exported utility function** (preferring its own file under `src/utils/**`, or an appropriate shared file) rather than duplicating it or leaving it hidden inside another utility.
 
 ---
 
@@ -94,9 +94,7 @@ export function calculateProgressPercent(completed: number, total: number): numb
 
 Before finishing any utility function task, verify:
 
-- [ ] Checked `src/utils/**` first to avoid duplicating existing utilities.
-- [ ] Non-API logic lives in `src/utils/**` rather than inside API routes or components.
+- [ ] Inspected `src/utils/**` first to avoid duplicating existing utilities.
+- [ ] Each function focuses on a single purpose reusable across the application and uses `camelCase` naming (with `UPPER_SNAKE_CASE` for file-level constants).
 - [ ] Each utility preferably lives in its own file (or shares a common file only with closely related utilities).
-- [ ] Each function does one thing cleanly and follows `camelCase` naming (with `UPPER_SNAKE_CASE` for file-level constants).
-- [ ] Private helpers are truly exclusive to one file, and any helper reusable in multiple places has been broken out into its own exported utility function.
-
+- [ ] Private helpers remain truly exclusive to one file, and any helper usable in multiple places has been broken out into its own exported utility function.

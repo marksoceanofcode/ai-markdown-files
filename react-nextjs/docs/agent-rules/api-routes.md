@@ -2,7 +2,7 @@
 
 Follow these rules strictly whenever creating or modifying API route handlers under `src/app/api/**` (or `src/pages/api/**` if the project uses Pages Router).
 
-Also follow [naming-conventions.md](./naming-conventions.md), [environment.md](./environment.md), and [utils.md](./utils.md).
+Also follow [naming-conventions.md](./naming-conventions.md) and [environment.md](./environment.md).
 
 ---
 
@@ -13,45 +13,36 @@ Also follow [naming-conventions.md](./naming-conventions.md), [environment.md](.
 
 ---
 
-## 2. What Belongs in an API Route
+## 2. Purpose & Scope
 
-Keep logic inside an API route **only** when it genuinely belongs at the API layer, such as:
+Use API routes for server-side endpoints where network or backend orchestration belongs:
 
-- HTTP method handling (`GET`, `POST`, `PUT`, `PATCH`, `DELETE`).
-- Request parsing, header/cookie inspection, and payload validation.
-- Authentication, authorization, and session checks.
-- Server-only operations (database queries, third-party API requests using private secrets from `.env.local`, webhook verification).
-- Formatting HTTP responses, headers, and status codes (`NextResponse.json(...)`).
+- **Requesting other endpoints**: Proxying third-party APIs, calling downstream backend services using private secrets or keys from `.env.local`, and handling incoming webhooks.
+- **Endpoint logic**: Handling HTTP methods (`GET`, `POST`, `PUT`, `PATCH`, `DELETE`), parsing and validating requests, checking auth or sessions, performing database operations, and returning structured HTTP responses and status codes.
+- **Querying local data (`src/data/**`)**: Reading, filtering, or serving local data files or modules stored in the `data` folder when exposing that data through an API endpoint makes sense.
 
 ---
 
-## 3. Move Non-API Logic to `src/utils/**`
+## 3. Examples
 
-- Logic that does **NOT** need to live in an API route (such as data transformations, formatting, reusable calculations, or general helpers) **MUST** be placed in `src/utils/**` and imported into the route handler.
-- Follow [utils.md](./utils.md) when organizing, naming, and splitting utility functions.
-- Keep route handlers thin and focused on HTTP orchestration.
-
----
-
-## 4. Example
+### Requesting an External Endpoint
 
 ```ts
 // src/app/api/users/route.ts
 import { NextRequest, NextResponse } from "next/server";
-import { sanitizeUserEmail } from "@/utils/sanitizeUserEmail";
 
-const EXTERNAL_USERS_ENDPOINT = process.env.EXTERNAL_USERS_API_URL ?? "";
+const EXTERNAL_USERS_API_URL = process.env.EXTERNAL_USERS_API_URL ?? "";
 const INTERNAL_API_KEY = process.env.INTERNAL_API_KEY ?? "";
 
 export async function POST(request: NextRequest) {
   const body = await request.json();
-  const normalizedEmail = sanitizeUserEmail(body.email);
+  const normalizedEmail = typeof body.email === "string" ? body.email.trim().toLowerCase() : "";
 
   if (!normalizedEmail) {
     return NextResponse.json({ error: "Valid email is required." }, { status: 400 });
   }
 
-  const upstreamResponse = await fetch(EXTERNAL_USERS_ENDPOINT, {
+  const upstreamResponse = await fetch(EXTERNAL_USERS_API_URL, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -69,6 +60,24 @@ export async function POST(request: NextRequest) {
 }
 ```
 
+### Querying Local Data (`src/data/**`)
+
+```ts
+// src/app/api/products/route.ts
+import { NextRequest, NextResponse } from "next/server";
+import products from "@/data/products";
+
+export async function GET(request: NextRequest) {
+  const categoryParam = request.nextUrl.searchParams.get("category");
+
+  const filteredProducts = categoryParam
+    ? products.filter((product) => product.category === categoryParam)
+    : products;
+
+  return NextResponse.json({ data: filteredProducts }, { status: 200 });
+}
+```
+
 ---
 
 ## Verification Checklist
@@ -76,7 +85,6 @@ export async function POST(request: NextRequest) {
 Before finishing any API route task, verify:
 
 - [ ] The route handler lives inside the `api` folder (`src/app/api/**` or `src/pages/api/**`).
-- [ ] Only API-layer logic (HTTP handling, validation, auth, server-only calls, response formatting) lives in the route file.
-- [ ] Any reusable or non-API logic has been placed in `src/utils/**` following `utils.md`.
+- [ ] The route handles genuine endpoint responsibilities (requesting external endpoints, server-side endpoint logic, or querying local data under `src/data/**`).
+- [ ] HTTP methods, status codes, and error responses are handled cleanly.
 - [ ] Any new environment variables used by the route are added to both `.env.local` and `.env.example` per `environment.md`.
-
