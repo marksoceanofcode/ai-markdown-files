@@ -14,3 +14,4 @@ Before creating or modifying files, you MUST read and strictly follow the corres
 - **Defining Shared Types (`src/types/**`)**: Read `docs/agent-rules/typescript-types.md`
 - **Creating/Editing API Routes (`src/app/api/**`)**: Read `docs/agent-rules/api-routes.md`
 - **Creating/Editing Utility Functions (`src/utils/**`)**: Read `docs/agent-rules/utils.md`
+- **Static Assets & Media (`public/**`)**: Read `docs/agent-rules/public-assets.md`
